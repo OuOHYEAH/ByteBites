@@ -2,13 +2,12 @@
 package service
 
 import (
-	"crypto/tls"
 	"log"
 	"os"
 	"sync"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 
 	kitchenpb "github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
 	menupb "github.com/CallenCaracy/ByteBites/services/Menu_Service/pb"
@@ -26,29 +25,18 @@ var (
 	KitchenClient kitchenpb.KitchenServiceClient
 )
 
-// Helper function to create a connection
-func createConn(url string) *grpc.ClientConn {
-	// Force the DNS resolver to bypass any system proxies
-	// and enforce TLS
-	conn, err := grpc.NewClient(url, 
-		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true, // Required for Render's proxy
-		})),
-		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
-	)
-	if err != nil {
-		log.Fatalf("failed to connect to gRPC at %s: %v", url, err)
-	}
-	return conn
-}
-
 func InitGRPCClients() {
 	userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
-		UserClient = userpb.NewAuthServiceClient(createConn(url))
+
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("failed to connect to user gRPC: %v", err)
+		}
+		UserClient = userpb.NewAuthServiceClient(conn)
 	})
 
 	menuOnce.Do(func() {
@@ -56,7 +44,12 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50051"
 		}
-		MenuClient = menupb.NewMenuServiceClient(createConn(url))
+
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("failed to connect to menu gRPC: %v", err)
+		}
+		MenuClient = menupb.NewMenuServiceClient(conn)
 	})
 
 	kitchenOnce.Do(func() {
@@ -64,6 +57,11 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50052"
 		}
-		KitchenClient = kitchenpb.NewKitchenServiceClient(createConn(url))
+
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("failed to connect to kitchen gRPC: %v", err)
+		}
+		KitchenClient = kitchenpb.NewKitchenServiceClient(conn)
 	})
 }
