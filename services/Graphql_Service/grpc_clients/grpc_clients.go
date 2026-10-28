@@ -26,20 +26,19 @@ var (
 )
 
 func InitGRPCClients() {
-	userOnce.Do(func() {
+		userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
-		url = "passthrough:///" + url
-
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		// Use grpc.WithInsecure() for public URL to bypass the proxy SSL stripping
+		conn, err := grpc.Dial(url, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
 		}
 		UserClient = userpb.NewAuthServiceClient(conn)
 	})
-
+	
 	menuOnce.Do(func() {
 		url := os.Getenv("MENU_SERVICE_URL")
 		if url == "" {
