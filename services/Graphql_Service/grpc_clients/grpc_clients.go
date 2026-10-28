@@ -2,13 +2,12 @@
 package service
 
 import (
-	"crypto/tls"
 	"log"
 	"os"
 	"sync"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 
 	kitchenpb "github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
 	menupb "github.com/CallenCaracy/ByteBites/services/Menu_Service/pb"
@@ -33,14 +32,7 @@ func InitGRPCClients() {
 			url = "localhost:50050"
 		}
 
-		creds := credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true,
-		})
-
-		conn, err := grpc.NewClient(url,
-			grpc.WithTransportCredentials(creds),
-			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
-		)
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
 		}
@@ -53,14 +45,7 @@ func InitGRPCClients() {
 			url = "localhost:50051"
 		}
 
-		creds := credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true,
-		})
-
-		conn, err := grpc.NewClient(url,
-			grpc.WithTransportCredentials(creds),
-			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
-		)
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to menu gRPC: %v", err)
 		}
@@ -73,14 +58,7 @@ func InitGRPCClients() {
 			url = "localhost:50052"
 		}
 
-		creds := credentials.NewTLS(&tls.Config{
-			InsecureSkipVerify: true,
-		})
-
-		conn, err := grpc.NewClient(url,
-			grpc.WithTransportCredentials(creds),
-			grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy":"round_robin"}`),
-		)
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to kitchen gRPC: %v", err)
 		}
