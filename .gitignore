@@ -43,3 +43,6 @@ Thumbs.db
 
 # Uncomment below if you prefer not to commit generated protobuf files
 # proto/*.pb.go
+
+db_url.txt
+.env

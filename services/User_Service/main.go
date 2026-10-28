@@ -23,8 +23,8 @@ func main() {
 		log.Fatal("Failed to create logger: %v", err)
 	}
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file: %v", err)
+		if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables from Render")
 	}
 
 	supabaseURL := os.Getenv("SUPABASE_URL")

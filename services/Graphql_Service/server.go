@@ -35,7 +35,7 @@ func main() {
 	service.InitGRPCClients()
 
 	if err := godotenv.Load(); err != nil {
-		logger.Fatal("No .env file found, using system environment variables")
+		logger.Warn("No .env file found, using system environment variables")
 	}
 
 	port := os.Getenv("PORT")
@@ -137,7 +137,9 @@ func main() {
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:5173",
-			"http://localhost:5174"},
+			"http://localhost:5174",
+			"*", // Allow Vercel frontend
+		},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
