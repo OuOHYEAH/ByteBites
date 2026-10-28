@@ -32,7 +32,7 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50050" // Fallback for local
 		}
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{})))
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
 		}
@@ -44,7 +44,7 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50051"
 		}
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{})))
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to menu gRPC: %v", err)
 		}
@@ -56,7 +56,7 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50052"
 		}
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{})))
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to kitchen gRPC: %v", err)
 		}
