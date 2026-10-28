@@ -29,8 +29,9 @@ func InitGRPCClients() {
 		userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
-			url = "localhost:50050" // Fallback for local
+			url = "localhost:50050"
 		}
+		// THIS IS THE FIX: Use insecure credentials
 		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
