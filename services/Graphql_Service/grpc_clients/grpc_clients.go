@@ -15,25 +15,23 @@ import (
 )
 
 var (
-	userOnce   sync.Once
-	UserClient userpb.AuthServiceClient
+	userOnce    sync.Once
+	UserClient  userpb.AuthServiceClient
 
-	menuOnce   sync.Once
-	MenuClient menupb.MenuServiceClient
+	menuOnce    sync.Once
+	MenuClient  menupb.MenuServiceClient
 
-	kitchenOnce   sync.Once
+	kitchenOnce sync.Once
 	KitchenClient kitchenpb.KitchenServiceClient
 )
 
 func InitGRPCClients() {
-				userOnce.Do(func() {
+	userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
-		
-		// Force gRPC to bypass the proxy
-		url = "passthrough:///" + url 
+		url = "passthrough:///" + url
 
 		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
@@ -42,13 +40,11 @@ func InitGRPCClients() {
 		UserClient = userpb.NewAuthServiceClient(conn)
 	})
 
-			menuOnce.Do(func() {
+	menuOnce.Do(func() {
 		url := os.Getenv("MENU_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50051"
 		}
-		
-		// Force gRPC to bypass the proxy
 		url = "passthrough:///" + url
 
 		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -63,8 +59,6 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50052"
 		}
-		
-		// Force gRPC to bypass the proxy
 		url = "passthrough:///" + url
 
 		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -73,3 +67,4 @@ func InitGRPCClients() {
 		}
 		KitchenClient = kitchenpb.NewKitchenServiceClient(conn)
 	})
+}
