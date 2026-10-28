@@ -2,13 +2,13 @@
 package service
 
 import (
+	"crypto/tls"
 	"log"
 	"os"
 	"sync"
-	"crypto/tls"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 
 	kitchenpb "github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
 	menupb "github.com/CallenCaracy/ByteBites/services/Menu_Service/pb"
@@ -27,13 +27,12 @@ var (
 )
 
 func InitGRPCClients() {
-			userOnce.Do(func() {
+	userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
 
-		// Force TLS but allow HTTP/2 fallback
 		creds := credentials.NewTLS(&tls.Config{
 			InsecureSkipVerify: true,
 		})
@@ -48,7 +47,7 @@ func InitGRPCClients() {
 		UserClient = userpb.NewAuthServiceClient(conn)
 	})
 
-		menuOnce.Do(func() {
+	menuOnce.Do(func() {
 		url := os.Getenv("MENU_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50051"
@@ -87,3 +86,4 @@ func InitGRPCClients() {
 		}
 		KitchenClient = kitchenpb.NewKitchenServiceClient(conn)
 	})
+}
