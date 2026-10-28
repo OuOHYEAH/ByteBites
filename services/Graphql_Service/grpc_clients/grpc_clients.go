@@ -26,27 +26,31 @@ var (
 )
 
 func InitGRPCClients() {
-			userOnce.Do(func() {
+				userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
 		
-		// Add the WithBlock() and ForceCodec options
-		conn, err := grpc.NewClient(url, 
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-		)
+		// Force gRPC to bypass the proxy
+		url = "passthrough:///" + url 
+
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
 		}
 		UserClient = userpb.NewAuthServiceClient(conn)
 	})
 
-		menuOnce.Do(func() {
+			menuOnce.Do(func() {
 		url := os.Getenv("MENU_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50051"
 		}
+		
+		// Force gRPC to bypass the proxy
+		url = "passthrough:///" + url
+
 		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to menu gRPC: %v", err)
@@ -54,15 +58,18 @@ func InitGRPCClients() {
 		MenuClient = menupb.NewMenuServiceClient(conn)
 	})
 
-		kitchenOnce.Do(func() {
+	kitchenOnce.Do(func() {
 		url := os.Getenv("KITCHEN_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50052"
 		}
+		
+		// Force gRPC to bypass the proxy
+		url = "passthrough:///" + url
+
 		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("failed to connect to kitchen gRPC: %v", err)
 		}
 		KitchenClient = kitchenpb.NewKitchenServiceClient(conn)
 	})
-}
