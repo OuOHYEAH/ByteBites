@@ -134,13 +134,12 @@ func main() {
 
 	mux.Handle("/query", middleware.AuthMiddleware(srv))
 
-	corsHandler := cors.New(cors.Options{
-				AllowedOrigins: []string{
+		corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{
 			"http://localhost:5173",
 			"http://localhost:5174",
 			"https://byte-bites.vercel.app",
-			"https://byte-bites-q7t35wyrc-ouhyeah.vercel.app", // Add this line
-			"*", 
+			"https://byte-bites-q7t35wyrc-ouhyeah.vercel.app",
 		},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
