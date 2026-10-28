@@ -11,13 +11,13 @@ import { getMainDefinition } from "@apollo/client/utilities";
 
 // Regular HTTP link for queries & mutations
 const httpLink = new HttpLink({
-  uri: "http://localhost:8080/query",
+  uri: "https://mealflow-graphql.onrender.com/query",
   credentials: "include",
 });
 
 // WebSocket link for subscriptions
 const wsLink = new GraphQLWsLink(createClient({
-  url: "ws://localhost:8080/query",
+  url: "wss://mealflow-graphql.onrender.com/query",
   connectionParams: () => {
     const token = localStorage.getItem("accessToken");
     return {
