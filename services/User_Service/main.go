@@ -24,7 +24,7 @@ func main() {
 	}
 
 		if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, using system environment variables from Render")
+		log.Warn("No .env file found, using system environment variables from Render")
 	}
 
 	supabaseURL := os.Getenv("SUPABASE_URL")
