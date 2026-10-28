@@ -2,14 +2,17 @@
 package service
 
 import (
-	"log"
-	"sync"
-	"os"
 	"crypto/tls"
+	"log"
+	"os"
+	"sync"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-    ...
+
+	kitchenpb "github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
+	menupb "github.com/CallenCaracy/ByteBites/services/Menu_Service/pb"
+	userpb "github.com/CallenCaracy/ByteBites/services/User_Service/pb"
 )
 
 var (
