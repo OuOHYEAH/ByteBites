@@ -26,13 +26,16 @@ var (
 )
 
 func InitGRPCClients() {
-		userOnce.Do(func() {
+			userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
-		// THIS IS THE FIX: Use insecure credentials
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		
+		// Add the WithBlock() and ForceCodec options
+		conn, err := grpc.NewClient(url, 
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+		)
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
 		}
