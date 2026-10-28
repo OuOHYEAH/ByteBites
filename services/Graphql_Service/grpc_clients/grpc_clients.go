@@ -4,13 +4,12 @@ package service
 import (
 	"log"
 	"sync"
+	"os"
+	"crypto/tls"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
-	kitchenpb "github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
-	menupb "github.com/CallenCaracy/ByteBites/services/Menu_Service/pb"
-	userpb "github.com/CallenCaracy/ByteBites/services/User_Service/pb"
+	"google.golang.org/grpc/credentials"
+    ...
 )
 
 var (
@@ -25,24 +24,36 @@ var (
 )
 
 func InitGRPCClients() {
-	userOnce.Do(func() {
-		conn, err := grpc.NewClient("localhost:50050", grpc.WithTransportCredentials(insecure.NewCredentials()))
+		userOnce.Do(func() {
+		url := os.Getenv("USER_SERVICE_URL")
+		if url == "" {
+			url = "localhost:50050" // Fallback for local
+		}
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{})))
 		if err != nil {
 			log.Fatalf("failed to connect to user gRPC: %v", err)
 		}
 		UserClient = userpb.NewAuthServiceClient(conn)
 	})
 
-	menuOnce.Do(func() {
-		conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+		menuOnce.Do(func() {
+		url := os.Getenv("MENU_SERVICE_URL")
+		if url == "" {
+			url = "localhost:50051"
+		}
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{})))
 		if err != nil {
 			log.Fatalf("failed to connect to menu gRPC: %v", err)
 		}
 		MenuClient = menupb.NewMenuServiceClient(conn)
 	})
 
-	kitchenOnce.Do(func() {
-		conn, err := grpc.NewClient("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+		kitchenOnce.Do(func() {
+		url := os.Getenv("KITCHEN_SERVICE_URL")
+		if url == "" {
+			url = "localhost:50052"
+		}
+		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{})))
 		if err != nil {
 			log.Fatalf("failed to connect to kitchen gRPC: %v", err)
 		}
