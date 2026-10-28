@@ -53,7 +53,7 @@ func main() {
 		}
 	}()
 
-	port := os.Getenv("GRPC_PORT")
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "50050"
 	}

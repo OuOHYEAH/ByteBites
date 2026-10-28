@@ -19,7 +19,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	lis, err := net.Listen("tcp", ":50051")
+		port := os.Getenv("PORT")
+	if port == "" {
+		port = "50051" // Fallback for local development
+	}
+
+	lis, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		log.Fatal("Failed to listen: %v", err)
 		os.Exit(1)
