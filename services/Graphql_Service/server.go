@@ -9,7 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"strings"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
@@ -134,18 +134,21 @@ func main() {
 
 	mux.Handle("/query", middleware.AuthMiddleware(srv))
 
-		corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{
-			"http://localhost:5173",
-			"http://localhost:5174",
-			"https://byte-bites.vercel.app",
-			"https://byte-bites-q7t35wyrc-ouhyeah.vercel.app",
+	corsHandler := cors.New(cors.Options{
+		AllowOriginFunc: func(origin string) bool {
+			// Allow localhost and any vercel.app domain
+			if strings.HasPrefix(origin, "http://localhost") {
+				return true
+			}
+			if strings.HasSuffix(origin, ".vercel.app") {
+				return true
+			}
+			return false
 		},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}).Handler(mux)
-
 	logger.Info("🚀 GraphQL server running at http://localhost:%s/", port)
 	log.Fatal(http.ListenAndServe(":"+port, corsHandler))
 }
