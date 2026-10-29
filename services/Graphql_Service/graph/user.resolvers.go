@@ -6,7 +6,6 @@ package graph
 
 import (
 	"Graphql_Service/graph/model"
-	service "Graphql_Service/grpc_clients"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -18,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/CallenCaracy/ByteBites/services/User_Service/pb"
 	supabase "github.com/nedpals/supabase-go"
 	"github.com/supabase-community/auth-go/types"
 	"google.golang.org/grpc/metadata"
@@ -117,15 +115,16 @@ func (r *mutationResolver) SignIn(ctx context.Context, input model.SignInInput) 
 func (r *mutationResolver) SignInOnlyEmployee(ctx context.Context, input model.SignInInput) (*model.AuthResponse, error) {
 	req := model.SignInInput(input)
 
-	// Get user role via gRPC
-	getRole, err := service.UserClient.GetUserRole(ctx, &pb.GetUserRoleRequest{Email: req.Email})
+	// Get user role from the users DB directly
+	var role string
+	err := r.Resolver.DB1.QueryRowContext(ctx, `SELECT role FROM public.users WHERE email = $1`, req.Email).Scan(&role)
 	if err != nil {
 		r.Logger.Error("Error retrieving role for %s: %v", req.Email, err)
 		return nil, fmt.Errorf("failed to retrieve user role: %v", err)
 	}
 
-	if getRole.Role != "employee" {
-		r.Logger.Error("Email %s has role %s; not allowed to sign in as employee", req.Email, getRole.Role)
+	if role != "employee" {
+		r.Logger.Error("Email %s has role %s; not allowed to sign in as employee", req.Email, role)
 		return nil, fmt.Errorf("user does not have permission to sign in as an employee")
 	}
 
@@ -366,12 +365,12 @@ func (r *queryResolver) GetAuthenticatedUser(ctx context.Context) (*model.User, 
 
 	token := strings.TrimPrefix(tokenList[0], "Bearer ")
 
-	resp, err := service.UserClient.VerifyToken(ctx, &pb.TokenRequest{Token: token})
+	id, _, err := verifyToken(ctx, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to verify token: %v", err)
 	}
 
-	user, err := r.GetUserByID(ctx, resp.Id)
+	user, err := r.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("user not found")
 	}
@@ -409,13 +408,13 @@ func (r *queryResolver) CheckToken(ctx context.Context) (*model.TokenCheckRespon
 
 	token := strings.TrimPrefix(tokenList[0], "Bearer ")
 
-	resp, err := service.UserClient.VerifyToken(ctx, &pb.TokenRequest{Token: token})
+	id, email, err := verifyToken(ctx, token)
 	if err != nil {
 		return nil, fmt.Errorf("failed to verify token: %v", err)
 	}
 
 	return &model.TokenCheckResponse{
-		ID:    resp.Id,
-		Email: resp.Email,
+		ID:    id,
+		Email: email,
 	}, nil
 }

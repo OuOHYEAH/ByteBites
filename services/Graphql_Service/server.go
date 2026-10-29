@@ -3,7 +3,6 @@ package main
 import (
 	"Graphql_Service/graph"
 	"Graphql_Service/graph/model"
-	service "Graphql_Service/grpc_clients"
 	"Graphql_Service/middleware"
 	"database/sql"
 	"log"
@@ -31,8 +30,6 @@ func main() {
 	if err != nil {
 		logger.Fatal("Failed to create logger: %v", err)
 	}
-
-	service.InitGRPCClients()
 
 	if err := godotenv.Load(); err != nil {
 		logger.Warn("No .env file found, using system environment variables")

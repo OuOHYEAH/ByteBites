@@ -6,11 +6,9 @@ package graph
 
 import (
 	"Graphql_Service/graph/model"
-	service "Graphql_Service/grpc_clients"
 	"context"
 	"fmt"
 
-	"github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
 	"github.com/google/uuid"
 )
 
@@ -45,9 +43,8 @@ func (r *mutationResolver) CreateTransaction(ctx context.Context, orderID uuid.U
 		return nil, fmt.Errorf("failed to create transaction: %v", err)
 	}
 
-	_, err = service.KitchenClient.CreateOrderQueue(ctx, &pb.CreateOrderQueueRequest{
-		OrderId: orderID.String(),
-	})
+	preparing := model.KitchenStatusPreparing
+	_, err = r.CreateOrderQueue(ctx, orderID.String(), &preparing)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create order queue: %v", err)
 	}

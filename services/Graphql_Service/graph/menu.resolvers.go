@@ -6,11 +6,8 @@ package graph
 
 import (
 	"Graphql_Service/graph/model"
-	service "Graphql_Service/grpc_clients"
 	"context"
-	"fmt"
 
-	"github.com/CallenCaracy/ByteBites/services/Menu_Service/pb"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
@@ -19,12 +16,7 @@ import (
 func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMenuItem) (*model.MenuItemFull, error) {
 	var discountedPrice float32
 	if input.Discount > 0 {
-		resp, err := service.MenuClient.CalculateDiscount(ctx, &pb.DiscountRequest{Price: float32(input.Price), Discount: float32(input.Discount)})
-		if err != nil {
-			return nil, fmt.Errorf("failed to calculate discounted price: %v", err)
-
-		}
-		discountedPrice = resp.DiscountedPrice
+		discountedPrice = calculateDiscount(float32(input.Price), float32(input.Discount))
 	} else {
 		discountedPrice = float32(input.Price)
 	}
@@ -108,12 +100,7 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
 func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input model.UpdateMenuItem) (*model.MenuItemFull, error) {
 	var discountedPrice float32
 	if *input.Discount > 0 {
-		resp, err := service.MenuClient.CalculateDiscount(ctx, &pb.DiscountRequest{Price: float32(*input.Price), Discount: float32(*input.Discount)})
-		if err != nil {
-			return nil, fmt.Errorf("failed to calculate discounted price: %v", err)
-
-		}
-		discountedPrice = resp.DiscountedPrice
+		discountedPrice = calculateDiscount(float32(*input.Price), float32(*input.Discount))
 	} else {
 		discountedPrice = float32(*input.Price)
 	}

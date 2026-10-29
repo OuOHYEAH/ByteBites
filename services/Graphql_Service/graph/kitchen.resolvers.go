@@ -6,11 +6,8 @@ package graph
 
 import (
 	"Graphql_Service/graph/model"
-	service "Graphql_Service/grpc_clients"
 	"context"
-	"fmt"
 
-	"github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
 	"github.com/google/uuid"
 )
 
@@ -32,19 +29,6 @@ func (r *mutationResolver) CreateInventory(ctx context.Context, menuID string, a
 
 // UpdateInventory is the resolver for the updateInventory field.
 func (r *mutationResolver) UpdateInventory(ctx context.Context, id string, availableServings *int32, lowStockThreshold *int32) (*model.Inventory, error) {
-	resp, err := service.KitchenClient.DeductStock(ctx, &pb.DeductStockRequest{
-		MenuItemId: id,
-		Quantity: func() int32 {
-			if availableServings != nil {
-				return *availableServings
-			}
-			return 0
-		}(),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to deduct inventory: %v, message: %s", err, resp.Message)
-	}
-
 	query := `
 		UPDATE public.menu_stock
 		SET 
@@ -56,7 +40,7 @@ func (r *mutationResolver) UpdateInventory(ctx context.Context, id string, avail
 	`
 
 	var inv model.Inventory
-	err = r.Resolver.DB7.QueryRow(query, id, availableServings, lowStockThreshold).
+	err := r.Resolver.DB7.QueryRow(query, id, availableServings, lowStockThreshold).
 		Scan(&inv.ID, &inv.MenuID, &inv.AvailableServings, &inv.LowStockThreshold, &inv.LastUpdated)
 
 	if err != nil {

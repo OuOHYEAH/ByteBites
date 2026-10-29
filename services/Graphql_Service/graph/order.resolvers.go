@@ -6,15 +6,12 @@ package graph
 
 import (
 	"Graphql_Service/graph/model"
-	service "Graphql_Service/grpc_clients"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log"
 	"time"
-
-	"github.com/CallenCaracy/ByteBites/services/Kitchen_Service/pb"
 )
 
 // CreateCart is the resolver for the createCart field.
@@ -132,16 +129,13 @@ func (r *mutationResolver) UpdateCartItem(ctx context.Context, input model.Updat
 		return nil, errors.New("quantity must be provided")
 	}
 
-	resp, err := service.KitchenClient.CheckStock(ctx, &pb.CheckStockRequest{
-		MenuItemId: input.MenuItemID,
-		Quantity:   *input.Quantity,
-	})
+	available, err := r.checkStock(ctx, input.MenuItemID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to check inventory: %w", err)
 	}
-	if !resp.Available || resp.AvailableQuantity < int32(*input.Quantity) {
+	if available == 0 || available < int32(*input.Quantity) {
 		return nil, fmt.Errorf("not enough stock for menu item %s, available: %d, requested: %d",
-			input.ID, resp.AvailableQuantity, *input.Quantity)
+			input.ID, available, *input.Quantity)
 	}
 
 	var cartItem model.CartItem
@@ -240,16 +234,13 @@ func (r *mutationResolver) CreateOrderFromCart(ctx context.Context, cartID strin
 		}
 
 		// Check stock AFTER scanning values
-		resp, err := service.KitchenClient.CheckStock(ctx, &pb.CheckStockRequest{
-			MenuItemId: item.MenuItemID,
-			Quantity:   int32(item.Quantity),
-		})
+		available, err := r.checkStock(ctx, item.MenuItemID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to check inventory for item %s: %w", item.MenuItemID, err)
 		}
-		if !resp.Available || resp.AvailableQuantity < int32(item.Quantity) {
+		if available == 0 || available < int32(item.Quantity) {
 			return nil, fmt.Errorf("not enough stock for menu item %s, available: %d, requested: %d",
-				item.MenuItemID, resp.AvailableQuantity, item.Quantity)
+				item.MenuItemID, available, item.Quantity)
 		}
 
 		items = append(items, item)
