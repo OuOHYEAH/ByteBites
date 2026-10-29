@@ -25,18 +25,22 @@ var (
 	KitchenClient kitchenpb.KitchenServiceClient
 )
 
+func getConn(target string) *grpc.ClientConn {
+	// Prepend passthrough to skip the DNS resolver
+	conn, err := grpc.NewClient("passthrough:///"+target, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("failed to connect to gRPC at %s: %v", target, err)
+	}
+	return conn
+}
+
 func InitGRPCClients() {
 	userOnce.Do(func() {
 		url := os.Getenv("USER_SERVICE_URL")
 		if url == "" {
 			url = "localhost:50050"
 		}
-
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			log.Fatalf("failed to connect to user gRPC: %v", err)
-		}
-		UserClient = userpb.NewAuthServiceClient(conn)
+		UserClient = userpb.NewAuthServiceClient(getConn(url))
 	})
 
 	menuOnce.Do(func() {
@@ -44,12 +48,7 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50051"
 		}
-
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			log.Fatalf("failed to connect to menu gRPC: %v", err)
-		}
-		MenuClient = menupb.NewMenuServiceClient(conn)
+		MenuClient = menupb.NewMenuServiceClient(getConn(url))
 	})
 
 	kitchenOnce.Do(func() {
@@ -57,11 +56,6 @@ func InitGRPCClients() {
 		if url == "" {
 			url = "localhost:50052"
 		}
-
-		conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			log.Fatalf("failed to connect to kitchen gRPC: %v", err)
-		}
-		KitchenClient = kitchenpb.NewKitchenServiceClient(conn)
+		KitchenClient = kitchenpb.NewKitchenServiceClient(getConn(url))
 	})
 }
