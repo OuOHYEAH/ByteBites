@@ -76,8 +76,7 @@ const MenuItem: React.FC = () => {
 
     if (menuLoading || inventoryLoading) return <p>Loading...</p>;
     if (menuError) return <p>Error loading menu item: {menuError.message}</p>;
-    if (inventoryError) return <p>Error loading inventory: {inventoryError.message}</p>;
-    if (!menuData?.getMenuItemById || !inventoryData?.inventory) return <p>No data found.</p>;
+    if (!menuData?.getMenuItemById) return <p>No data found.</p>;
     if (deleting) return <p>Deleting...</p>;
 
     const handleFormChange = (
@@ -192,7 +191,7 @@ const MenuItem: React.FC = () => {
     };
 
     const item = menuData.getMenuItemById;
-    const inventory = inventoryData.inventory;
+    const inventory = inventoryData?.inventory;
 
     return (
         <>
@@ -236,11 +235,11 @@ const MenuItem: React.FC = () => {
                 <div className="flex items-center space-x-4 justify-end">
                     {item.discount > 0 ? (
                         <>
-                            <p className="text-lg text-gray-500 line-through">₱{item.price.toFixed(2)}</p>
+                            <p className="text-lg text-gray-500 line-through">₱{item.price?.toFixed(2) ?? "0.00"}</p>
                             <p className="text-2xl font-bold text-green-700">₱{item.discounted_price.toFixed(2)}</p>
                         </>
                     ) : (
-                        <p className="text-2xl font-bold text-green-700">₱{item.price.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-green-700">₱{item.price?.toFixed(2) ?? "0.00"}</p>
                     )}
                 </div>
                 <p className="text-gray-900 text-lg font-semibold">
