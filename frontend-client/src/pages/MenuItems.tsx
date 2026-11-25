@@ -38,7 +38,7 @@ const MenuItem: React.FC = () => {
         setOrderData((prev) => {
           if (name === "quantity") {
             const inputQuantity = parseInt(value, 10);
-            const maxQuantity = inventory?.availableServings || 1;
+            inventory?.availableServings ?? 1
             const safeQuantity = Math.min(Math.max(inputQuantity, 1), maxQuantity);
             return {
               ...prev,
@@ -56,21 +56,19 @@ const MenuItem: React.FC = () => {
     if (menuLoading) return <p>Loading menu item...</p>;
     if (menuError) return <p>Error fetching menu item: {menuError.message}</p>;
 
-    if (inventoryLoading) return <p>Loading inventory...</p>;
-    if (inventoryError) return <p>Error fetching inventory: {inventoryError.message}</p>;
-
+    
     {addItemLoading && <p>Adding to cart...</p>}
     {addItemError && <p className="text-red-500">Error: {addItemError.message}</p>}
     {addedItemData && (
         <p className="text-green-600">Item added to cart: {addedItemData.addCartItem.id}</p>
     )}
 
-    if (!menuData || !menuData.getMenuItemById || !inventoryData || !inventoryData.inventory) {
+    if (!menuData || !menuData.getMenuItemById) {
     return <p>No data found.</p>;
-    }
+}
 
     const item = menuData.getMenuItemById;
-    const inventory = inventoryData.inventory;
+    const inventory = inventoryData?.inventory;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -143,11 +141,11 @@ const MenuItem: React.FC = () => {
                     <div className="flex items-center space-x-4 justify-end">
                         {item.discount > 0 ? (
                             <>
-                                <p className="text-lg text-gray-500 line-through">₱{item.price.toFixed(2)}</p>
-                                <p className="text-2xl font-bold text-green-700">₱{item.discounted_price.toFixed(2)}</p>
+                                <p className="text-lg text-gray-500 line-through">₱{item.price?.toFixed(2) ?? "0.00"}</p>
+                                <p className="text-2xl font-bold text-green-700">₱{item.discounted_price?.toFixed(2) ?? "0.00"}</p>
                             </>
                         ) : (
-                            <p className="text-2xl font-bold text-green-700">₱{item.price.toFixed(2)}</p>
+                            <p className="text-2xl font-bold text-green-700">₱{item.price?.toFixed(2) ?? "0.00"}</p>
                         )}
                     </div>
                     <p className="text-xl font-semibold text-yellow-400 whitespace-nowrap">
@@ -157,12 +155,12 @@ const MenuItem: React.FC = () => {
                         Stock Left:{" "}
                         <span
                             className={`${
-                                inventory.availableServings <= inventory.lowStockThreshold
+                                (inventory?.availableServings ?? 0) <= (inventory?.lowStockThreshold ?? 0)
                                     ? "text-red-500 font-semibold"
                                     : "text-green-600 font-semibold"
                             }`}
                         >
-                            {inventory.availableServings}
+                            {inventory?.availableServings ?? "N/A"}
                         </span>
                     </p>
                 </div>
@@ -183,13 +181,13 @@ const MenuItem: React.FC = () => {
                             value={orderData.quantity}
                             onChange={handleInputChange}
                             min="1"
-                            max={inventory.availableServings}
+                            max={inventory?.availableServings ?? 1}
                             className="w-full p-3 border rounded-lg text-black"
                             required
                             />
-                            {orderData.quantity > inventory.availableServings && (
-                                <p className="text-red-500 text-sm">Max stock available is {inventory.availableServings}</p>
-                            )}
+                            {(inventory?.availableServings ?? 0) > 0 && orderData.quantity > (inventory?.availableServings ?? 0) && (
+    <p className="text-red-500 text-sm">Max stock available is {inventory?.availableServings ?? "N/A"}</p>
+)}
                     </div>
 
                     <div>
@@ -216,7 +214,7 @@ const MenuItem: React.FC = () => {
                                 ? "bg-blue-600 hover:bg-blue-700"
                                 : "bg-gray-400 cursor-not-allowed"
                         }`}
-                        disabled={!item.availability_status || inventory.availableServings < 0}
+                        disabled={!item.availability_status || (inventory?.availableServings ?? 0) < 0}
                     >
                         Submit Order
                     </button>
@@ -227,7 +225,7 @@ const MenuItem: React.FC = () => {
                         >
                             Cancel
                         </button>
-                        {(!item.availability_status || inventory.availableServings < 0) && (
+                        {(!item.availability_status || (inventory?.availableServings ?? 0) < 0) && (
                             <p className="text-red-500 text-md">Item is currently unavailable and out of stock</p>
                         )}
                     </div>
