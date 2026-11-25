@@ -14,7 +14,7 @@ const MenuItem: React.FC = () => {
     const [customError, setCustomError] = useState<string | null>(null);
 
 
-    const { data: inventoryData, loading: inventoryLoading, error: inventoryError } = useQuery(GET_INVENTORY, {
+    const { data: inventoryData } = useQuery(GET_INVENTORY, {
         variables: { menuId: menuId }
     });
     
@@ -38,7 +38,7 @@ const MenuItem: React.FC = () => {
         setOrderData((prev) => {
           if (name === "quantity") {
             const inputQuantity = parseInt(value, 10);
-            inventory?.availableServings ?? 1
+            const maxQuantity = inventory?.availableServings ?? 1;
             const safeQuantity = Math.min(Math.max(inputQuantity, 1), maxQuantity);
             return {
               ...prev,
