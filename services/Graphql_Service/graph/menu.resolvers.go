@@ -28,7 +28,7 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
     $1, $2, $3, $4, $5,
     $6, $7, NOW(), NOW()
 )`
-	RETURNING id, name, description, price, category, discount, discounted_price,
+	RETURNING name, description, price, category, discount,
 		availability_status, image_url, created_at, updated_at`
 
 	item := &model.MenuItem{
@@ -46,7 +46,7 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
     item.Discount,
     item.AvailabilityStatus, item.ImageURL,
 	).Scan(
-		&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
+		&item.Name, &item.Description, &item.Price, &item.Category,
 		&item.Discount, &discountedPrice,
 		&item.AvailabilityStatus, &item.ImageURL,
 		&item.CreatedAt, &item.UpdatedAt,
