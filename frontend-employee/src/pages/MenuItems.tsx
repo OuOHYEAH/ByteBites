@@ -58,11 +58,7 @@ const MenuItem: React.FC = () => {
     });
 
     // Fetch inventory
-    const {
-        data: inventoryData,
-        loading: inventoryLoading,
-        error: inventoryError,
-    } = useQuery(GET_INVENTORY, {
+    const { data: inventoryData, loading: inventoryLoading } = useQuery(GET_INVENTORY, {
         variables: { menuId },
         skip: !menuId,
     });
