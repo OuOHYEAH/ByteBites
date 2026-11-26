@@ -165,7 +165,7 @@ func (r *queryResolver) GetAllMenuItems(ctx context.Context) ([]*model.MenuItemF
 		var item model.MenuItemFull
 
 		err := rows.Scan(
-			&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
+			&item.Name, &item.Description, &item.Price, &item.Category,
 			&item.Discount, &discountedPrice, &item.AvailabilityStatus, &item.ImageURL,
 			&item.CreatedAt, &item.UpdatedAt,
 		)
@@ -209,7 +209,7 @@ func (r *queryResolver) GetMenuItemByID(ctx context.Context, id string) (*model.
 	var item model.MenuItem
 	var discountedPrice float32
 	err := r.Resolver.DB2.QueryRow(query, id).Scan(
-		&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
+		&item.Name, &item.Description, &item.Price, &item.Category,
 		&item.Discount, &discountedPrice, &item.AvailabilityStatus, &item.ImageURL,
 		&item.CreatedAt, &item.UpdatedAt,
 	)
@@ -219,7 +219,6 @@ func (r *queryResolver) GetMenuItemByID(ctx context.Context, id string) (*model.
 	}
 
 	return &model.MenuItemFull{
-		ID:                 item.ID,
 		Name:               item.Name,
 		Description:        item.Description,
 		Price:              item.Price,
@@ -257,7 +256,7 @@ func (r *queryResolver) GetMenuItemsByIds(ctx context.Context, ids []string) ([]
 
 		// Scan the row into the item struct
 		err := rows.Scan(
-			&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
+			&item.Name, &item.Description, &item.Price, &item.Category,
 			&item.Discount, &discountedPrice, &item.AvailabilityStatus, &item.ImageURL,
 			&item.CreatedAt, &item.UpdatedAt,
 		)
