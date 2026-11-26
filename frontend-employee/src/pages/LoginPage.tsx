@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
                     <div className="flex items-center justify-center mt-1 mb-1 w-full">
                         <img src={logo} alt="Logo" className="h-20 w-20 object-contain" />
                     </div>
-                    <h2 className="text-3xl font-semibold text-gray-700 text-center mt-1 mb-1">ByteBites</h2>
+                    <h2 className="text-3xl font-semibold text-gray-700 text-center mt-1 mb-1">MealFlow</h2>
                     <p className="text-lg text-gray-600 text-center mt-1 mb-1">Welcome back!</p>
                     <div className="mt-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
