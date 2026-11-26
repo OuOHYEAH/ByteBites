@@ -241,7 +241,7 @@ func (r *queryResolver) GetMenuItemsByIds(ctx context.Context, ids []string) ([]
 
 		// Scan the row into the item struct
 		err := rows.Scan(
-			&item.Name, &item.Description, &item.Price, &item.Category,
+			&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
 			&item.Discount, &discountedPrice, &item.AvailabilityStatus, &item.ImageURL,
 			&item.CreatedAt, &item.UpdatedAt,
 		)
