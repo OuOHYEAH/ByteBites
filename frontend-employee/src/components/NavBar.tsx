@@ -95,8 +95,8 @@ const Navbar: React.FC = () => {
         <nav className="bg-slate-900 text-white p-4 shadow-md">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/dashboard" className="flex items-center space-x-2">
-                    <img src={logo} alt="Logo" className="h-15 w-15 object-contain" />
-                    <span className="text-xl font-semibold text-white">ByteBites</span>
+                    <img src={logo} alt="Logo" className="h-17 w-17 object-contain" />
+                    <span className="text-xl font-semibold text-white">MealFlow</span>
                 </Link>
                 <ul className="hidden md:flex space-x-6">
                     <li>
