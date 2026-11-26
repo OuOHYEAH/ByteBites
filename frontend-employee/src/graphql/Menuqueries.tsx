@@ -39,17 +39,7 @@ export const GET_MENU_ITEM_BY_ID = gql`
 export const ADD_MENU_ITEM = gql`
   mutation CreateMenuItem($input: NewMenuItem!) {
     createMenuItem(input: $input) {
-      id
       name
-      description
-      price
-      discounted_price
-      category
-      discount
-      availability_status
-      image_url
-      created_at
-      updated_at
     }
   }
 `;
