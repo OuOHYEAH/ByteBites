@@ -22,12 +22,12 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
 	}
 
 	query := `INSERT INTO public.menu_list (
-		name, description, price, category, discount, discounted_price,
-		availability_status, image_url, created_at, updated_at
-	) VALUES (
-		$1, $2, $3, $4, $5, $6,
-		$7, $8, NOW(), NOW()
-	)
+    name, description, price, category, discount,
+    availability_status, image_url, created_at, updated_at
+) VALUES (
+    $1, $2, $3, $4, $5,
+    $6, $7, NOW(), NOW()
+)`
 	RETURNING id, name, description, price, category, discount, discounted_price,
 		availability_status, image_url, created_at, updated_at`
 
@@ -42,9 +42,9 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
 	}
 
 	err := r.Resolver.DB2.QueryRow(query,
-		item.Name, item.Description, item.Price, item.Category,
-		item.Discount, discountedPrice,
-		item.AvailabilityStatus, item.ImageURL,
+    item.Name, item.Description, item.Price, item.Category,
+    item.Discount,
+    item.AvailabilityStatus, item.ImageURL,
 	).Scan(
 		&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
 		&item.Discount, &discountedPrice,
