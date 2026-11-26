@@ -262,53 +262,54 @@ const MenuItem: React.FC = () => {
                 Update
               </button>
               <button
-                onClick={async () => {
-                    try {
-                    const confirmDelete = confirm("Are you sure you want to delete this menu item and its inventory?");
-                    if (!confirmDelete) return;
+                             onClick={async () => {
+                try {
+                  const confirmDelete = confirm("Are you sure you want to delete this menu item and its inventory?");
+                  if (!confirmDelete) return;
 
-                    const res1 = await deleteMenuItem({ variables: { id: menuId } });
-                    const res2 = await deleteInventory({ variables: { id: inventory?.id } });
+                  // 1. Delete the menu item FIRST
+                  const res1 = await deleteMenuItem({ variables: { id: menuId } });
 
-                    if (res1.data?.deleteMenuItem && res2.data?.deleteInventory) {
-                        let oldImagePath: string | null = null;
-                        if (item?.image_url) {
-                          try {
-                            const url = new URL(item.image_url);
-                            const pathname = url.pathname;
-                            const match = pathname.match(/\/storage\/v1\/object\/public\/pictures\/(.+)/);
-                            if (match) {
-                              oldImagePath = match[1];
-                              console.log('Extracted image path:', oldImagePath);
-                            }
-                          } catch (err) {
-                            console.warn('Failed to parse image URL:', err);
-                          }
-                        }
-                      
-                        if (oldImagePath && oldImagePath !== 'menupic/placeholder.jpg') {
-                          const { error: deleteError } = await supabase
-                            .storage
-                            .from('pictures')
-                            .remove([oldImagePath]);
-                      
-                          if (deleteError) {
-                            console.error('Error deleting image from storage:', deleteError.message);
-                          } else {
-                            console.log('Image deleted successfully from storage.');
-                          }
-                        }
-                      
-                        alert("Menu item and inventory deleted successfully.");
-                        navigate("/dashboard");
-                      } else {
-                        alert("Failed to delete menu item or inventory.");
-                      }
-                } catch (error) {
-                    console.error("Error deleting menu item or inventory:", error);
-                    alert("An error occurred while deleting the menu item or inventory.");
+                  // 2. Only try to delete inventory if the inventory ID actually exists
+                  if (inventory?.id) {
+                    await deleteInventory({ variables: { id: inventory.id } });
                   }
-                }}
+
+                  if (res1.data?.deleteMenuItem) {
+                    let oldImagePath: string | null = null;
+                    if (item?.image_url) {
+                      try {
+                        const url = new URL(item.image_url);
+                        const pathname = url.pathname;
+                        const match = pathname.match(/\/storage\/v1\/object\/public\/pictures\/(.+)/);
+                        if (match) {
+                          oldImagePath = match[1];
+                        }
+                      } catch (err) {
+                        console.warn('Failed to parse image URL:', err);
+                      }
+                    }
+
+                    if (oldImagePath && oldImagePath !== 'menupic/placeholder.jpg') {
+                      const { error: deleteError } = await supabase
+                        .storage
+                        .from('pictures')
+                        .remove([oldImagePath]);
+                      if (deleteError) {
+                        console.error('Error deleting image from storage:', deleteError.message);
+                      }
+                    }
+
+                    alert("Menu item deleted successfully.");
+                    navigate("/dashboard");
+                  } else {
+                    alert("Failed to delete menu item.");
+                  }
+                } catch (error) {
+                  console.error("Error deleting menu item:", error);
+                  alert("An error occurred while deleting the menu item.");
+                }
+              }}
                 className="bg-black text-red-500 px-4 py-2 rounded hover:bg-gray-800"
                 >
                 Delete
