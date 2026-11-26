@@ -164,7 +164,7 @@ func (r *queryResolver) GetAllMenuItems(ctx context.Context) ([]*model.MenuItemF
 		var item model.MenuItemFull
 
 		err := rows.Scan(
-			&item.Name, &item.Description, &item.Price, &item.Category,
+			&item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
 			&item.Discount, &discountedPrice, &item.AvailabilityStatus, &item.ImageURL,
 			&item.CreatedAt, &item.UpdatedAt,
 		)
