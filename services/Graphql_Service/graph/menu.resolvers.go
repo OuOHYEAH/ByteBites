@@ -14,12 +14,7 @@ import (
 
 // CreateMenuItem - Insert a new menu item
 func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMenuItem) (*model.MenuItemFull, error) {
-	var discountedPrice float32
-	if input.Discount > 0 {
-		discountedPrice = calculateDiscount(float32(input.Price), float32(input.Discount))
-	} else {
-		discountedPrice = float32(input.Price)
-	}
+	
 
 	    query := `INSERT INTO public.menu_list (
         name, description, price, category, discount, 
@@ -95,11 +90,7 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
 
 // UpdateMenuItem - Update an existing menu item
 func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input model.UpdateMenuItem) (*model.MenuItemFull, error) {
-	if *input.Discount > 0 {
-		discountedPrice = calculateDiscount(float32(*input.Price), float32(*input.Discount))
-	} else {
-		discountedPrice = float32(*input.Price)
-	}
+	
 
 	    query := `UPDATE public.menu_list
     SET name = $1, description = $2, price = $3, category = $4, discount = $5,
