@@ -28,7 +28,7 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
         $1, $2, $3, $4, $5, 
         $6, $7, NOW(), NOW()
     )
-    RETURNING id, name, description, price, category, discount, discounted_price, availability_status, image_url, created_at, updated_at
+    RETURNING id, name, description, price, category, discount, discounted_price, availability_status, image_url, created_at, updated_at`
 
 	item := &model.MenuItem{
 		Name:               input.Name,
@@ -106,14 +106,14 @@ func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input 
     SET name = $1, description = $2, price = $3, category = $4, discount = $5,
         availability_status = $6, image_url = $7, updated_at = NOW()
     WHERE id = $8
-    RETURNING id, name, description, price, category, discount, discounted_price, availability_status, image_url, created_at, updated_at
+    RETURNING id, name, description, price, category, discount, discounted_price, availability_status, image_url, created_at, updated_at`
 
 	var item model.MenuItemFull
 	err := r.Resolver.DB2.QueryRow(query,
-		input.Name, input.Description, input.Price, input.Category,
-		input.Discount, discountedPrice, input.AvailabilityStatus,
-		input.ImageURL, id,
-	).Scan(
+        input.Name, input.Description, input.Price, input.Category,
+        input.Discount, input.AvailabilityStatus,
+        input.ImageURL, id,
+    ).Scan(
         &item.ID, &item.Name, &item.Description, &item.Price, &item.Category,
         &item.Discount, &item.DiscountedPrice, &item.AvailabilityStatus, &item.ImageURL,
         &item.CreatedAt, &item.UpdatedAt,
