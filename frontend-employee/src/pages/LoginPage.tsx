@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
                 </div>
                 <form onSubmit={handleLogin} className="flex flex-col justify-center p-8 w-full lg:w-1/2">
                     <div className="flex items-center justify-center mt-1 mb-1 w-full">
-                        <img src={logo} alt="Logo" className="h-20 w-20 object-contain" />
+                        <img src={logo} alt="Logo" className="h-24 w-24 object-contain" />
                     </div>
                     <h2 className="text-3xl font-semibold text-gray-700 text-center mt-1 mb-1">MealFlow</h2>
                     <p className="text-lg text-gray-600 text-center mt-1 mb-1">Welcome back!</p>
