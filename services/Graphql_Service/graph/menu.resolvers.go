@@ -21,15 +21,15 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
 		discountedPrice = float32(input.Price)
 	}
 
-	query := `INSERT INTO public.menu_list (
-    name, description, price, category, discount,
-    availability_status, image_url, created_at, updated_at
-) VALUES (
-    $1, $2, $3, $4, $5,
-    $6, $7, NOW(), NOW()
-)`
-	RETURNING name, description, price, category, discount,
-		availability_status, image_url, created_at, updated_at`
+	    query := `INSERT INTO public.menu_list (
+        name, description, price, category, discount, 
+        availability_status, image_url, created_at, updated_at
+    ) VALUES (
+        $1, $2, $3, $4, $5, 
+        $6, $7, NOW(), NOW()
+    )
+    RETURNING name, description, price, category, discount, 
+        availability_status, image_url, created_at, updated_at`
 
 	item := &model.MenuItem{
 		Name:               input.Name,
@@ -45,12 +45,11 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
     item.Name, item.Description, item.Price, item.Category,
     item.Discount,
     item.AvailabilityStatus, item.ImageURL,
-	).Scan(
-		&item.Name, &item.Description, &item.Price, &item.Category,
-		&item.Discount, &discountedPrice,
-		&item.AvailabilityStatus, &item.ImageURL,
-		&item.CreatedAt, &item.UpdatedAt,
-	)
+	    ).Scan(
+        &item.Name, &item.Description, &item.Price, &item.Category,
+        &item.Discount, &item.AvailabilityStatus, &item.ImageURL,
+        &item.CreatedAt, &item.UpdatedAt,
+    )
 
 	if err != nil {
 		return nil, err
@@ -104,12 +103,12 @@ func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input 
 		discountedPrice = float32(*input.Price)
 	}
 
-	query := `UPDATE public.menu_list
-	SET name = $1, description = $2, price = $3, category = $4, discount = $5,
-	    discounted_price = $6, availability_status = $7, image_url = $8, updated_at = NOW()
-	WHERE id = $9
-	RETURNING name, description, price, category, discount, 
-	          availability_status, image_url, created_at, updated_at`
+	    query := `UPDATE public.menu_list
+    SET name = $1, description = $2, price = $3, category = $4, discount = $5,
+        availability_status = $6, image_url = $7, updated_at = NOW()
+    WHERE id = $8
+    RETURNING name, description, price, category, discount,
+        availability_status, image_url, created_at, updated_at`
 
 	var item model.MenuItemFull
 	err := r.Resolver.DB2.QueryRow(query,
@@ -117,10 +116,10 @@ func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input 
 		input.Discount, discountedPrice, input.AvailabilityStatus,
 		input.ImageURL, id,
 	).Scan(
-		&item.Name, &item.Description, &item.Price, &item.DiscountedPrice,
-		&item.Category, &item.Discount, &item.AvailabilityStatus,
-		&item.ImageURL, &item.CreatedAt, &item.UpdatedAt,
-	)
+        &item.Name, &item.Description, &item.Price, &item.Category,
+        &item.Discount, &item.AvailabilityStatus, &item.ImageURL,
+        &item.CreatedAt, &item.UpdatedAt,
+    )
 
 	if err != nil {
 		return nil, err
