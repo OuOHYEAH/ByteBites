@@ -70,7 +70,7 @@ const MenuItem: React.FC = () => {
         }
     });
 
-    if (menuLoading || inventoryLoading) return <p>Loading...</p>;
+    if (menuLoading) return <p>Loading...</p>;
     if (menuError) return <p>Error loading menu item: {menuError.message}</p>;
     if (!menuData?.getMenuItemById) return <p>No data found.</p>;
     if (deleting) return <p>Deleting...</p>;
@@ -232,7 +232,7 @@ const MenuItem: React.FC = () => {
                     {item.discount > 0 ? (
                         <>
                             <p className="text-lg text-gray-500 line-through">₱{item.price?.toFixed(2) ?? "0.00"}</p>
-                            <p className="text-2xl font-bold text-green-700">₱{item.discounted_price.toFixed(2)}</p>
+                            <p className="text-2xl font-bold text-green-700">₱{item.discounted_price?.toFixed(2) ?? "0.00"}</p>
                         </>
                     ) : (
                         <p className="text-2xl font-bold text-green-700">₱{item.price?.toFixed(2) ?? "0.00"}</p>
@@ -241,15 +241,15 @@ const MenuItem: React.FC = () => {
                 <p className="text-gray-900 text-lg font-semibold">
                     {item?.discount ? `${item.discount.toFixed(2)}% OFF` : "No Discount"}
                 </p>
-                <p className="text-sm text-gray-600">
-                  Quantity Available:{" "}
-                  <span className={inventory.availableServings <= inventory.lowStockThreshold ? "text-red-500" : "text-green-600"}>
-                    {inventory.availableServings}
-                  </span>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Low Stock Threshold: <span className="text-yellow-500">{inventory.lowStockThreshold}</span>
-                </p>
+               <p className="text-sm text-gray-600">
+  Quantity Available:{" "}
+  <span className={(inventory?.availableServings ?? 0) <= (inventory?.lowStockThreshold ?? 0) ? "text-red-500" : "text-green-600"}>
+    {inventory?.availableServings ?? "N/A"}
+  </span>
+</p>
+<p className="text-sm text-gray-600">
+  Low Stock Threshold: <span className="text-yellow-500">{inventory?.lowStockThreshold ?? "N/A"}</span>
+</p>
               </div>
             </div>
       
@@ -268,7 +268,7 @@ const MenuItem: React.FC = () => {
                     if (!confirmDelete) return;
 
                     const res1 = await deleteMenuItem({ variables: { id: menuId } });
-                    const res2 = await deleteInventory({ variables: { id: inventory.id } });
+                    const res2 = await deleteInventory({ variables: { id: inventory?.id } });
 
                     if (res1.data?.deleteMenuItem && res2.data?.deleteInventory) {
                         let oldImagePath: string | null = null;
