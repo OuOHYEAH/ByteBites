@@ -82,7 +82,6 @@ func (r *mutationResolver) CreateMenuItem(ctx context.Context, input model.NewMe
 	r.Resolver.mu.Unlock()
 
 	return &model.MenuItemFull{
-		ID:                 item.ID,
 		Name:               item.Name,
 		Description:        item.Description,
 		Price:              item.Price,
@@ -109,7 +108,7 @@ func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input 
 	SET name = $1, description = $2, price = $3, category = $4, discount = $5,
 	    discounted_price = $6, availability_status = $7, image_url = $8, updated_at = NOW()
 	WHERE id = $9
-	RETURNING id, name, description, price, discounted_price, category, discount, 
+	RETURNING name, description, price, category, discount, 
 	          availability_status, image_url, created_at, updated_at`
 
 	var item model.MenuItemFull
@@ -118,7 +117,7 @@ func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input 
 		input.Discount, discountedPrice, input.AvailabilityStatus,
 		input.ImageURL, id,
 	).Scan(
-		&item.ID, &item.Name, &item.Description, &item.Price, &item.DiscountedPrice,
+		&item.Name, &item.Description, &item.Price, &item.DiscountedPrice,
 		&item.Category, &item.Discount, &item.AvailabilityStatus,
 		&item.ImageURL, &item.CreatedAt, &item.UpdatedAt,
 	)
@@ -128,7 +127,6 @@ func (r *mutationResolver) UpdateMenuItem(ctx context.Context, id string, input 
 	}
 
 	return &model.MenuItemFull{
-		ID:                 item.ID,
 		Name:               item.Name,
 		Description:        item.Description,
 		Price:              item.Price,
